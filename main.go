@@ -21,7 +21,7 @@ func main() {
 	mux.HandleFunc("/", handleRoot)
 	mux.HandleFunc("POST /users", createUser)
 	mux.HandleFunc("GET /users/{id}", getUser)
-	// mux.HandleFunc("DELETE /users/{id}", deleteUser)
+	mux.HandleFunc("DELETE /users/{id}", deleteUser)
 
 
 	fmt.Println("Server listening to :8080")
@@ -56,6 +56,28 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+func deleteUser(w http.ResponseWriter, r *http.Request){
+	id, err := strconv.Atoi(r.PathValue("id"))
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if _, ok := userCashe[id]; !ok {
+		http.Error(w, "user not found", http.StatusBadRequest)
+		return
+	}
+
+	casheMutex.Lock()
+	delete(userCashe, id)
+	casheMutex.Unlock()
+
+	w.WriteHeader(http.StatusNoContent)
+
+
+ }
+
 func getUser(w http.ResponseWriter, r *http.Request){
 	id, err := strconv.Atoi(r.PathValue("id")) 
 
@@ -88,6 +110,3 @@ func getUser(w http.ResponseWriter, r *http.Request){
 	w.Write(j)
 
 }
-// func deleteUser(w http.ResponseWriter, r *http.Request){
-// 	id, err := strconv.Atoi(r.PathValue("id"))
-//  }
