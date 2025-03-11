@@ -21,7 +21,7 @@ func main() {
 	mux.HandleFunc("/", handleRoot)
 	mux.HandleFunc("POST /users", createUser)
 	mux.HandleFunc("GET /users/{id}", getUser)
-	// mux.HandleFunc("De /users/{id}", getUser)
+	// mux.HandleFunc("DELETE /users/{id}", deleteUser)
 
 
 	fmt.Println("Server listening to :8080")
@@ -75,7 +75,7 @@ func getUser(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	w.WriteHeader("Content-Type":"application/json")
+	w.Header().Set("Content-Type", "application/json")
 	j, err := json.Marshal(user)
 
 	if err != nil {
@@ -88,3 +88,6 @@ func getUser(w http.ResponseWriter, r *http.Request){
 	w.Write(j)
 
 }
+// func deleteUser(w http.ResponseWriter, r *http.Request){
+// 	id, err := strconv.Atoi(r.PathValue("id"))
+//  }
